@@ -14,6 +14,8 @@ and extract informations from disk on the live system.
  - Analyze VBR (Volume Boot Record) for NTFS partition (New Technology File System)
  - Analyze MFT file and attribute (Master File Table)
  - Extract MFT file
+ - Analyze ExFAT Boot Sector
+ - Repair MBR for non bootable disk and MFT/ExFAT partitions (using disk carving)
 
 ## Requirements
 

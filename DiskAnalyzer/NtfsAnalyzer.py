@@ -25,7 +25,7 @@ This package implements multiples libraries and tools to parse, analyze
 and extract informations from disk on the live system.
 '''
 
-__version__ = "0.0.1"
+__version__ = "0.1.0"
 __author__ = "Maurice Lambert"
 __author_email__ = "mauricelambert434@gmail.com"
 __maintainer__ = "Maurice Lambert"
@@ -48,8 +48,6 @@ under certain conditions.
 copyright = __copyright__
 license = __license__
 
-print(copyright)
-
 from ctypes import LittleEndianStructure, c_uint8, c_uint32, c_char, c_uint64, c_ubyte, c_uint16, c_int8
 
 if __package__:
@@ -58,8 +56,8 @@ else:
     from DiskAnalyzer import get_main_partition, SECTOR_SIZE
 
 from _io import BufferedReader
+from sys import exit, stderr
 from typing import Tuple
-from sys import exit
 
 class NTFS_VBR(LittleEndianStructure):
     """
@@ -113,12 +111,10 @@ def ntfs_parse() -> Tuple[BufferedReader, NTFS_VBR, int]:
     file.seek(ntfs_offset)
     return file, parse_vbr(file.read(SECTOR_SIZE)), ntfs_offset
 
-def main() -> int:
+def print_vbr(vbr: NTFS_VBR) -> None:
     """
-    The main function to starts the script from the command line.
+    This function prints VBR values.
     """
-
-    file, vbr, offset = ntfs_parse()
 
     print("[+] VBR Detected")
     print(f"  Jump:                      {bytes(vbr.jump).hex()}")
@@ -150,9 +146,19 @@ def main() -> int:
 
     print(f"  Signature:                 {hex(vbr.signature)}")
 
-    if vbr.signature != 0xAA55:
-        print("Warning: Invalid NTFS boot sector signature.")
+def main() -> int:
+    """
+    The main function to starts the script from the command line.
+    """
 
+    print(copyright)
+    file, vbr, offset = ntfs_parse()
+
+    if vbr.signature != 0xAA55:
+        print("Warning: Invalid NTFS boot sector signature.", file=stderr)
+        return 1
+
+    print_vbr(vbr)
     return 0
 
 if __name__ == "__main__":

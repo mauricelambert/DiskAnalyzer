@@ -20,39 +20,61 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ###################
 
-'''
+"""
 This package implements multiples libraries and tools to parse, analyze
 and extract informations from disk on the live system.
-'''
+"""
 
-__version__ = "0.0.1"
+__version__ = "0.1.0"
 __author__ = "Maurice Lambert"
 __author_email__ = "mauricelambert434@gmail.com"
 __maintainer__ = "Maurice Lambert"
 __maintainer_email__ = "mauricelambert434@gmail.com"
-__description__ = '''
+__description__ = """
 This package implements multiples libraries and tools to parse, analyze
 and extract informations from disk on the live system.
-'''
+"""
 __url__ = "https://github.com/mauricelambert/DiskAnalyzer"
 
 __all__ = [
-    "ACEHeader", "ACL", "AttributeHeader", "AttributeHeaderNonResident", "AttributeHeaderResident", "AttributeList", "FileName", "MFTEntryHeader", "NonResidentAttribute", "ResidentAttribute", "SecurityDescriptor", "StandardInformation", "StandardInformationLess2K", "get_mft_content", "parse_mft"
+    "ACEHeader",
+    "ACL",
+    "AttributeHeader",
+    "AttributeHeaderNonResident",
+    "AttributeHeaderResident",
+    "AttributeList",
+    "FileName",
+    "MFTEntryHeader",
+    "NonResidentAttribute",
+    "ResidentAttribute",
+    "SecurityDescriptor",
+    "StandardInformation",
+    "StandardInformationLess2K",
+    "get_mft_content",
+    "parse_mft",
 ]
 
 __license__ = "GPL-3.0 License"
-__copyright__ = '''
+__copyright__ = """
 DiskAnalyzer  Copyright (C) 2025  Maurice Lambert
 This program comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it
 under certain conditions.
-'''
+"""
 copyright = __copyright__
 license = __license__
 
-print(copyright)
-
-from ctypes import LittleEndianStructure, Structure, c_ubyte, c_uint8, c_uint32, c_char, c_uint64, c_uint16, sizeof
+from ctypes import (
+    LittleEndianStructure,
+    Structure,
+    c_ubyte,
+    c_uint8,
+    c_uint32,
+    c_char,
+    c_uint64,
+    c_uint16,
+    sizeof,
+)
 from typing import List, Tuple, Iterable, Union
 from datetime import timedelta, datetime
 
@@ -120,18 +142,18 @@ FILE_NAME_ATTRIBUTE_FLAGS = {
 ACE_TYPE_MAP = {
     0x00: "Access Allowed",
     0x01: "Access Denied",
-    0x02: "System Audit"
+    0x02: "System Audit",
 }
- 
+
 ACE_FLAG_MAP = {
     0x01: "Object Inherit",
     0x02: "Container Inherit",
     0x04: "No Propagate Inherit",
     0x08: "Inherit Only",
     0x40: "Audit Success",
-    0x80: "Audit Failure"
+    0x80: "Audit Failure",
 }
- 
+
 ACCESS_MASK_FLAGS = {
     0x00000001: "ReadData / ListDirectory",
     0x00000002: "WriteData / AddFile",
@@ -151,9 +173,9 @@ ACCESS_MASK_FLAGS = {
     0x10000000: "GenericAll",
     0x20000000: "GenericExecute",
     0x40000000: "GenericWrite",
-    0x80000000: "GenericRead"
+    0x80000000: "GenericRead",
 }
- 
+
 SECURITY_DESCRIPTOR_CONTROL_FLAGS = {
     0x0001: "Owner Defaulted",
     0x0002: "Group Defaulted",
@@ -168,8 +190,9 @@ SECURITY_DESCRIPTOR_CONTROL_FLAGS = {
     0x1000: "DACL Protected",
     0x2000: "SACL Protected",
     0x4000: "RM Control Valid",
-    0x8000: "Self Relative"
+    0x8000: "Self Relative",
 }
+
 
 class MFTEntryHeader(LittleEndianStructure):
     """
@@ -178,21 +201,22 @@ class MFTEntryHeader(LittleEndianStructure):
 
     _pack_ = 1
     _fields_ = [
-        ('signature', c_char * 4),          # "FILE"
-        ('fixup_offset', c_uint16),
-        ('fixup_entries', c_uint16),
-        ('log_seq_number', c_uint64),
-        ('sequence_number', c_uint16),
-        ('hard_link_count', c_uint16),
-        ('first_attr_offset', c_uint16),
-        ('flags', c_uint16),                # 0x01 = in-use, 0x02 = directory
-        ('used_entry_size', c_uint32),
-        ('allocated_entry_size', c_uint32),
-        ('base_file_record', c_uint64),
-        ('next_attr_id', c_uint16),
-        ('align', c_uint16),
-        ('mft_record_number', c_uint32),
+        ("signature", c_char * 4),  # "FILE"
+        ("fixup_offset", c_uint16),
+        ("fixup_entries", c_uint16),
+        ("log_seq_number", c_uint64),
+        ("sequence_number", c_uint16),
+        ("hard_link_count", c_uint16),
+        ("first_attr_offset", c_uint16),
+        ("flags", c_uint16),  # 0x01 = in-use, 0x02 = directory
+        ("used_entry_size", c_uint32),
+        ("allocated_entry_size", c_uint32),
+        ("base_file_record", c_uint64),
+        ("next_attr_id", c_uint16),
+        ("align", c_uint16),
+        ("mft_record_number", c_uint32),
     ]
+
 
 class AttributeHeader(LittleEndianStructure):
     """
@@ -201,13 +225,13 @@ class AttributeHeader(LittleEndianStructure):
 
     _pack_ = 1
     _fields_ = [
-        ('type_id', c_uint32),
-        ('length', c_uint32),
-        ('non_resident', c_uint8),
-        ('name_length', c_uint8),
-        ('name_offset', c_uint16),
-        ('flags', c_uint16),
-        ('attribute_id', c_uint16),
+        ("type_id", c_uint32),
+        ("length", c_uint32),
+        ("non_resident", c_uint8),
+        ("name_length", c_uint8),
+        ("name_offset", c_uint16),
+        ("flags", c_uint16),
+        ("attribute_id", c_uint16),
     ]
 
 
@@ -220,18 +244,19 @@ class AttributeHeaderResident(LittleEndianStructure):
 
     _pack_ = 1
     _fields_ = [
-        ('type_id', c_uint32),
-        ('length', c_uint32),
-        ('non_resident', c_uint8),  # 0 = resident, 1 = non-resident
-        ('name_length', c_uint8),
-        ('name_offset', c_uint16),
-        ('flags', c_uint16),
-        ('attribute_id', c_uint16),
-        ('attr_length', c_uint32),
-        ('attr_offset', c_uint16),
-        ('indexed_flag', c_uint8),
-        ('padding', c_uint8),
+        ("type_id", c_uint32),
+        ("length", c_uint32),
+        ("non_resident", c_uint8),  # 0 = resident, 1 = non-resident
+        ("name_length", c_uint8),
+        ("name_offset", c_uint16),
+        ("flags", c_uint16),
+        ("attribute_id", c_uint16),
+        ("attr_length", c_uint32),
+        ("attr_offset", c_uint16),
+        ("indexed_flag", c_uint8),
+        ("padding", c_uint8),
     ]
+
 
 class ResidentAttribute(LittleEndianStructure):
     """
@@ -242,11 +267,12 @@ class ResidentAttribute(LittleEndianStructure):
 
     _pack_ = 1
     _fields_ = [
-        ('value_length', c_uint32),
-        ('value_offset', c_uint16),
-        ('flags', c_uint8),
-        ('reserved', c_uint8),
+        ("value_length", c_uint32),
+        ("value_offset", c_uint16),
+        ("flags", c_uint8),
+        ("reserved", c_uint8),
     ]
+
 
 class AttributeHeaderNonResident(LittleEndianStructure):
     """
@@ -257,21 +283,21 @@ class AttributeHeaderNonResident(LittleEndianStructure):
 
     _pack_ = 1
     _fields_ = [
-        ('type_id', c_uint32),
-        ('length', c_uint32),
-        ('non_resident', c_uint8),  # 0 = resident, 1 = non-resident
-        ('name_length', c_uint8),
-        ('name_offset', c_uint16),
-        ('flags', c_uint16),
-        ('attribute_id', c_uint16),
-        ('starting_vcn', c_uint64),
-        ('last_vcn', c_uint64),
-        ('data_run_offset', c_uint16),
-        ('compression_unit_size', c_uint16),
-        ('reserved', c_uint32),
-        ('allocated_size', c_uint64),
-        ('real_size', c_uint64),
-        ('initialized_size', c_uint64),
+        ("type_id", c_uint32),
+        ("length", c_uint32),
+        ("non_resident", c_uint8),  # 0 = resident, 1 = non-resident
+        ("name_length", c_uint8),
+        ("name_offset", c_uint16),
+        ("flags", c_uint16),
+        ("attribute_id", c_uint16),
+        ("starting_vcn", c_uint64),
+        ("last_vcn", c_uint64),
+        ("data_run_offset", c_uint16),
+        ("compression_unit_size", c_uint16),
+        ("reserved", c_uint32),
+        ("allocated_size", c_uint64),
+        ("real_size", c_uint64),
+        ("initialized_size", c_uint64),
     ]
 
     def parse_data_runs(self, cluster_size: int) -> List[Tuple[int, int]]:
@@ -293,15 +319,21 @@ class AttributeHeaderNonResident(LittleEndianStructure):
             len_size = header & 0x0F
             off_size = (header >> 4) & 0x0F
 
-            length_bytes = self.data_runs_data[i:i + len_size]
+            length_bytes = self.data_runs_data[i : i + len_size]
             i += len_size
-            offset_bytes = self.data_runs_data[i:i + off_size]
+            offset_bytes = self.data_runs_data[i : i + off_size]
             i += off_size
 
-            length = int.from_bytes(length_bytes, 'little')
+            length = int.from_bytes(length_bytes, "little")
 
             if off_size > 0:
-                offset = int.from_bytes(offset_bytes + (b'\x00' if offset_bytes[-1] < 0x80 else b'\xFF') * (8 - off_size), 'little', signed=True)
+                offset = int.from_bytes(
+                    offset_bytes
+                    + (b"\x00" if offset_bytes[-1] < 0x80 else b"\xFF")
+                    * (8 - off_size),
+                    "little",
+                    signed=True,
+                )
                 lcn += offset
 
             size = length * cluster_size
@@ -310,7 +342,9 @@ class AttributeHeaderNonResident(LittleEndianStructure):
 
         return self.data_runs
 
-    def read_data_runs(self, file: BufferedReader, ntfs_offset: int) -> Iterable[bytes]:
+    def read_data_runs(
+        self, file: BufferedReader, ntfs_offset: int
+    ) -> Iterable[bytes]:
         """
         This generator yields content block by content block.
         """
@@ -319,7 +353,9 @@ class AttributeHeaderNonResident(LittleEndianStructure):
             file.seek(ntfs_offset + offset)
             yield file.read(size)
 
-    def read_content(self, file: BufferedReader, ntfs_offset: int) -> bytearray:
+    def read_content(
+        self, file: BufferedReader, ntfs_offset: int
+    ) -> bytearray:
         """
         This method returns content as bytearray.
         """
@@ -328,6 +364,7 @@ class AttributeHeaderNonResident(LittleEndianStructure):
         for block in self.read_data_runs(file, ntfs_offset):
             content.extend(block)
         return content
+
 
 class NonResidentAttribute(LittleEndianStructure):
     """
@@ -338,15 +375,16 @@ class NonResidentAttribute(LittleEndianStructure):
 
     _pack_ = 1
     _fields_ = [
-        ('starting_vcn', c_uint64),
-        ('last_vcn', c_uint64),
-        ('data_run_offset', c_uint16),
-        ('compression_unit_size', c_uint16),
-        ('reserved', c_uint32),
-        ('allocated_size', c_uint64),
-        ('real_size', c_uint64),
-        ('initialized_size', c_uint64),
+        ("starting_vcn", c_uint64),
+        ("last_vcn", c_uint64),
+        ("data_run_offset", c_uint16),
+        ("compression_unit_size", c_uint16),
+        ("reserved", c_uint32),
+        ("allocated_size", c_uint64),
+        ("real_size", c_uint64),
+        ("initialized_size", c_uint64),
     ]
+
 
 class StandardInformationLess2K(LittleEndianStructure):
     """
@@ -373,11 +411,22 @@ class StandardInformationLess2K(LittleEndianStructure):
             f"  MFT change time:        {self.mft_modification_time}\n"
             f"  Access time:            {self.access_time}\n"
             f"  File attributes:        {self.FileAttributes}\n"
-            + (("    " + ", ".join(parse_standard_information_flags(self.FileAttributes)) + "\n") if self.FileAttributes else "") +
-            f"  Max versions:           {self.MaxVersions}\n"
+            + (
+                (
+                    "    "
+                    + ", ".join(
+                        parse_standard_information_flags(self.FileAttributes)
+                    )
+                    + "\n"
+                )
+                if self.FileAttributes
+                else ""
+            )
+            + f"  Max versions:           {self.MaxVersions}\n"
             f"  Version number:         {self.VersionNumber}\n"
             f"  Class ID:               {self.ClassId}\n"
         )
+
 
 class StandardInformation(LittleEndianStructure):
     """
@@ -408,8 +457,18 @@ class StandardInformation(LittleEndianStructure):
             f"  MFT change time:        {self.mft_modification_time}\n"
             f"  Access time:            {self.access_time}\n"
             f"  File attributes:        {self.FileAttributes}\n"
-            + (("    " + ", ".join(parse_standard_information_flags(self.FileAttributes)) + "\n") if self.FileAttributes else "") +
-            f"  Max versions:           {self.MaxVersions}\n"
+            + (
+                (
+                    "    "
+                    + ", ".join(
+                        parse_standard_information_flags(self.FileAttributes)
+                    )
+                    + "\n"
+                )
+                if self.FileAttributes
+                else ""
+            )
+            + f"  Max versions:           {self.MaxVersions}\n"
             f"  Version number:         {self.VersionNumber}\n"
             f"  Class ID:               {self.ClassId}\n"
             f"  Owner ID:               {self.OwnerId}\n"
@@ -417,6 +476,7 @@ class StandardInformation(LittleEndianStructure):
             f"  Quota charged:          {self.QuotaCharged}\n"
             f"  Update Sequence Number: {self.USN}\n"
         )
+
 
 class AttributeList(LittleEndianStructure):
     """
@@ -446,6 +506,7 @@ class AttributeList(LittleEndianStructure):
             f"  Attribute ID:                 {self.AttributeId}\n"
             f"  Name:                         {self.name}\n"
         )
+
 
 class FileName(LittleEndianStructure):
     """
@@ -478,12 +539,17 @@ class FileName(LittleEndianStructure):
             f"  Allocated size:         {self.AllocatedSize}\n"
             f"  Real size:              {self.RealSize}\n"
             f"  Flags:                  {self.Flags}\n"
-            + (("    " + ", ".join(parse_file_name_flags(self.Flags)) + "\n") if self.Flags else "") +
-            f"  Reserved:               {self.Reserved}\n"
+            + (
+                ("    " + ", ".join(parse_file_name_flags(self.Flags)) + "\n")
+                if self.Flags
+                else ""
+            )
+            + f"  Reserved:               {self.Reserved}\n"
             f"  Filename length:        {self.FileNameLength}\n"
             f"  Filename Namespace:     {self.FileNameNamespace}\n"
             f"  Name:                   {self.name}\n"
         )
+
 
 class SecurityDescriptor(LittleEndianStructure):
     """
@@ -503,21 +569,34 @@ class SecurityDescriptor(LittleEndianStructure):
 
     def __str__(self):
         if self.sacl:
-            sacl_indent = '\n  ' + str(self.sacl).replace('\n', '\n  ')
+            sacl_indent = "\n  " + str(self.sacl).replace("\n", "\n  ")
         if self.dacl:
-            dacl_indent = '\n  ' + str(self.dacl).replace('\n', '\n  ')
+            dacl_indent = "\n  " + str(self.dacl).replace("\n", "\n  ")
         return (
             "[+] $SECURITY_DESCRIPTOR detected\n"
             f"  Revision:  {self.Revision}\n"
             f"  Padding:   {self.Padding1}\n"
             f"  Control flags:      {self.ControlFlags}\n"
-            + (("    " + ", ".join(parse_control_flags(self.ControlFlags)) + "\n") if self.ControlFlags else "") +
-            f"  Offset owner: {self.OffsetOwner}" + (f" ({self.owner_sid})" if self.owner_sid else "") + "\n"
-            f"  Offset group: {self.OffsetGroup}" + (f" ({self.group_sid})" if self.group_sid else "") + "\n"
-            + (f"  SACL: {sacl_indent}\n" if self.sacl else "") +
-            (f"  DACL: {dacl_indent}" if self.dacl else "")
+            + (
+                (
+                    "    "
+                    + ", ".join(parse_control_flags(self.ControlFlags))
+                    + "\n"
+                )
+                if self.ControlFlags
+                else ""
+            )
+            + f"  Offset owner: {self.OffsetOwner}"
+            + (f" ({self.owner_sid})" if self.owner_sid else "")
+            + "\n"
+            f"  Offset group: {self.OffsetGroup}"
+            + (f" ({self.group_sid})" if self.group_sid else "")
+            + "\n"
+            + (f"  SACL: {sacl_indent}\n" if self.sacl else "")
+            + (f"  DACL: {dacl_indent}" if self.dacl else "")
         )
- 
+
+
 class ACL(LittleEndianStructure):
     """
     This class defines the MFT Access Control List structure.
@@ -533,7 +612,9 @@ class ACL(LittleEndianStructure):
     ]
 
     def __str__(self):
-        ace_indent = '\n    ' + "\n".join(str(x) for x in self.ace).replace('\n', '\n    ')
+        ace_indent = "\n    " + "\n".join(str(x) for x in self.ace).replace(
+            "\n", "\n    "
+        )
         return (
             "[+] ACL detected\n"
             f"  Revision:  {self.AclRevision}\n"
@@ -542,7 +623,8 @@ class ACL(LittleEndianStructure):
             f"  Ace count: {self.AceCount}\n"
             f"  ACE: {ace_indent}"
         )
- 
+
+
 class ACEHeader(LittleEndianStructure):
     """
     This class defines the MFT ACE header structure.
@@ -562,12 +644,21 @@ class ACEHeader(LittleEndianStructure):
             "[+] ACE Header detected\n"
             f"  Type:        {ACE_TYPE_MAP.get(self.AceType, f'Unknown ({self.AceType})')} ({self.AceType})\n"
             f"  Flags:       {self.AceFlags}\n"
-            + (("    " + ", ".join(parse_ace_flags(self.AceFlags)) + "\n") if self.AceFlags else "") +
-            f"  Size:        {self.AceSize}\n"
+            + (
+                ("    " + ", ".join(parse_ace_flags(self.AceFlags)) + "\n")
+                if self.AceFlags
+                else ""
+            )
+            + f"  Size:        {self.AceSize}\n"
             f"  Access mask: {self.AccessMask}\n"
-            + (("    " + ", ".join(parse_access_mask(self.AccessMask)) + "\n") if self.AccessMask else "") +
-            f"  SID:         {self.sid}"
+            + (
+                ("    " + ", ".join(parse_access_mask(self.AccessMask)) + "\n")
+                if self.AccessMask
+                else ""
+            )
+            + f"  SID:         {self.sid}"
         )
+
 
 def parse_sid(data: bytes) -> Tuple[str, int]:
     """
@@ -576,11 +667,15 @@ def parse_sid(data: bytes) -> Tuple[str, int]:
 
     revision = data[0]
     subauth_count = data[1]
-    id_auth = int.from_bytes(data[2:8], 'big')
-    sid_parts = [int.from_bytes(data[8 + i * 4:12 + i * 4], 'little') for i in range(subauth_count)]
-    sid = f"S-{revision}-{id_auth}" + ''.join(f"-{x}" for x in sid_parts)
+    id_auth = int.from_bytes(data[2:8], "big")
+    sid_parts = [
+        int.from_bytes(data[8 + i * 4 : 12 + i * 4], "little")
+        for i in range(subauth_count)
+    ]
+    sid = f"S-{revision}-{id_auth}" + "".join(f"-{x}" for x in sid_parts)
     sid_length = 8 + subauth_count * 4
     return sid, sid_length
+
 
 def parse_acl(data: bytes) -> ACL:
     """
@@ -590,44 +685,64 @@ def parse_acl(data: bytes) -> ACL:
     acl = ACL.from_buffer_copy(data)
     entries = []
     acl_size = sizeof(ACL)
- 
+
     for _ in range(acl.AceCount):
         ace_hdr = ACEHeader.from_buffer_copy(data[acl_size:])
-        sid, sid_len = parse_sid(data[acl_size + 8:])
+        sid, sid_len = parse_sid(data[acl_size + 8 :])
         ace_hdr.sid = sid
         entries.append(ace_hdr)
         acl_size += ace_hdr.AceSize
- 
+
     acl.ace = entries
     return acl
 
-def parse_security_descriptor(attribute_header: Union[AttributeHeaderResident, AttributeHeaderNonResident], file: BufferedReader, ntfs_offset: int) -> SecurityDescriptor:
+
+def parse_security_descriptor(
+    attribute_header: Union[
+        AttributeHeaderResident, AttributeHeaderNonResident
+    ],
+    file: BufferedReader,
+    ntfs_offset: int,
+) -> SecurityDescriptor:
     """
     This function parses the $SECURITY_DESCRIPTOR MFT attribute.
     """
 
     data = get_attribute_data(attribute_header, file, ntfs_offset)
     security_descriptor = SecurityDescriptor.from_buffer_copy(data[:20])
-    security_descriptor.owner_sid = security_descriptor.group_sid = security_descriptor.sacl = security_descriptor.dacl = None
- 
+    security_descriptor.owner_sid = security_descriptor.group_sid = (
+        security_descriptor.sacl
+    ) = security_descriptor.dacl = None
+
     if security_descriptor.OffsetOwner:
-        sid, _ = parse_sid(data[security_descriptor.OffsetOwner:])
+        sid, _ = parse_sid(data[security_descriptor.OffsetOwner :])
         security_descriptor.owner_sid = sid
- 
+
     if security_descriptor.OffsetGroup:
-        sid, _ = parse_sid(data[security_descriptor.OffsetGroup:])
+        sid, _ = parse_sid(data[security_descriptor.OffsetGroup :])
         security_descriptor.group_sid = sid
- 
+
     if security_descriptor.OffsetSACL:
-        security_descriptor.sacl = parse_acl(data[security_descriptor.OffsetSACL:], )
- 
+        security_descriptor.sacl = parse_acl(
+            data[security_descriptor.OffsetSACL :],
+        )
+
     if security_descriptor.OffsetDACL:
-        security_descriptor.dacl = parse_acl(data[security_descriptor.OffsetDACL:])
- 
+        security_descriptor.dacl = parse_acl(
+            data[security_descriptor.OffsetDACL :]
+        )
+
     attribute_header.parsing = security_descriptor
     return security_descriptor
 
-def get_attribute_data(attribute_header: Union[AttributeHeaderResident, AttributeHeaderNonResident], file: BufferedReader, ntfs_offset: int) -> bytes:
+
+def get_attribute_data(
+    attribute_header: Union[
+        AttributeHeaderResident, AttributeHeaderNonResident
+    ],
+    file: BufferedReader,
+    ntfs_offset: int,
+) -> bytes:
     """
     This function returns attribute data from resident and non resident attribute.
     """
@@ -637,7 +752,14 @@ def get_attribute_data(attribute_header: Union[AttributeHeaderResident, Attribut
     else:
         return attribute_header.data
 
-def parse_attribute_list(attribute_header: Union[AttributeHeaderResident, AttributeHeaderNonResident], file: BufferedReader, ntfs_offset: int) -> List[AttributeList]:
+
+def parse_attribute_list(
+    attribute_header: Union[
+        AttributeHeaderResident, AttributeHeaderNonResident
+    ],
+    file: BufferedReader,
+    ntfs_offset: int,
+) -> List[AttributeList]:
     """
     This function parses a $ATTRIBUTE_LIST MFT attribute.
     """
@@ -652,7 +774,7 @@ def parse_attribute_list(attribute_header: Union[AttributeHeaderResident, Attrib
         if attribute_list.RecordLength == 0:
             break
 
-        entry_data = data[offset:offset + attribute_list.RecordLength]
+        entry_data = data[offset : offset + attribute_list.RecordLength]
 
         name = ""
         if attribute_list.NameLength > 0:
@@ -670,6 +792,7 @@ def parse_attribute_list(attribute_header: Union[AttributeHeaderResident, Attrib
     attribute_header.parsing = entries
     return entries
 
+
 def filetime_to_datetime(filetime: int) -> datetime:
     """
     This function converts windows filetime to python datetime.
@@ -679,7 +802,14 @@ def filetime_to_datetime(filetime: int) -> datetime:
         return None
     return datetime(1601, 1, 1) + timedelta(microseconds=filetime / 10)
 
-def parse_standard_information(attribute_header: Union[AttributeHeaderResident, AttributeHeaderNonResident], file: BufferedReader, ntfs_offset: int) -> None:
+
+def parse_standard_information(
+    attribute_header: Union[
+        AttributeHeaderResident, AttributeHeaderNonResident
+    ],
+    file: BufferedReader,
+    ntfs_offset: int,
+) -> None:
     """
     This function parses the $STANDARD_INFORMATION MFT attribute.
     """
@@ -690,13 +820,28 @@ def parse_standard_information(attribute_header: Union[AttributeHeaderResident, 
         standard_information = StandardInformationLess2K.from_buffer_copy(data)
     else:
         standard_information = StandardInformation.from_buffer_copy(data)
-    standard_information.creation_time = filetime_to_datetime(standard_information.CreationTime)
-    standard_information.modification_time = filetime_to_datetime(standard_information.ModificationTime)
-    standard_information.mft_modification_time = filetime_to_datetime(standard_information.MFTChangeTime)
-    standard_information.access_time = filetime_to_datetime(standard_information.AccessTime)
+    standard_information.creation_time = filetime_to_datetime(
+        standard_information.CreationTime
+    )
+    standard_information.modification_time = filetime_to_datetime(
+        standard_information.ModificationTime
+    )
+    standard_information.mft_modification_time = filetime_to_datetime(
+        standard_information.MFTChangeTime
+    )
+    standard_information.access_time = filetime_to_datetime(
+        standard_information.AccessTime
+    )
     attribute_header.parsing = standard_information
 
-def parse_file_name(attribute_header: Union[AttributeHeaderResident, AttributeHeaderNonResident], file: BufferedReader, ntfs_offset: int) -> None:
+
+def parse_file_name(
+    attribute_header: Union[
+        AttributeHeaderResident, AttributeHeaderNonResident
+    ],
+    file: BufferedReader,
+    ntfs_offset: int,
+) -> None:
     """
     This function parses the $FILE_NAME MFT attribute.
     """
@@ -705,8 +850,12 @@ def parse_file_name(attribute_header: Union[AttributeHeaderResident, AttributeHe
 
     filename = FileName.from_buffer_copy(data)
     filename.creation_time = filetime_to_datetime(filename.CreationTime)
-    filename.modification_time = filetime_to_datetime(filename.ModificationTime)
-    filename.mft_modification_time = filetime_to_datetime(filename.MFTChangeTime)
+    filename.modification_time = filetime_to_datetime(
+        filename.ModificationTime
+    )
+    filename.mft_modification_time = filetime_to_datetime(
+        filename.MFTChangeTime
+    )
     filename.access_time = filetime_to_datetime(filename.AccessTime)
     attribute_header.parsing = filename
 
@@ -714,46 +863,68 @@ def parse_file_name(attribute_header: Union[AttributeHeaderResident, AttributeHe
     if filename.FileNameLength > 0:
         offset = sizeof(FileName)
         try:
-            name = data[offset:offset + filename.FileNameLength * 2].decode("utf-16-le")
+            name = data[offset : offset + filename.FileNameLength * 2].decode(
+                "utf-16-le"
+            )
         except UnicodeDecodeError:
-            name = repr(data[offset:offset + filename.FileNameLength * 2].decode("latin1"))
+            name = repr(
+                data[offset : offset + filename.FileNameLength * 2].decode(
+                    "latin1"
+                )
+            )
 
     filename.name = name
+
 
 def parse_standard_information_flags(flags: int) -> List[str]:
     """
     This function returns the string values for MFT entry flags.
     """
 
-    return [name for bit, name in FILE_INFORMATION_ATTRIBUTE_FLAGS.items() if flags & bit]
+    return [
+        name
+        for bit, name in FILE_INFORMATION_ATTRIBUTE_FLAGS.items()
+        if flags & bit
+    ]
+
 
 def parse_file_name_flags(flags: int) -> List[str]:
     """
     This function returns the string values for MFT entry flags.
     """
 
-    return [name for bit, name in FILE_NAME_ATTRIBUTE_FLAGS.items() if flags & bit]
+    return [
+        name for bit, name in FILE_NAME_ATTRIBUTE_FLAGS.items() if flags & bit
+    ]
+
 
 def parse_control_flags(flags: int) -> List[str]:
     """
     This function returns human readable control flags from flags value.
     """
 
-    return [desc for bit, desc in SECURITY_DESCRIPTOR_CONTROL_FLAGS.items() if flags & bit]
- 
+    return [
+        desc
+        for bit, desc in SECURITY_DESCRIPTOR_CONTROL_FLAGS.items()
+        if flags & bit
+    ]
+
+
 def parse_ace_flags(flags: int) -> List[str]:
     """
     This function returns human readable ACE flags from flags value.
     """
 
     return [name for bit, name in ACE_FLAG_MAP.items() if flags & bit]
- 
+
+
 def parse_access_mask(mask: int) -> List[str]:
     """
     This function returns human readable access flags from flags value.
     """
 
     return [name for bit, name in ACCESS_MASK_FLAGS.items() if mask & bit]
+
 
 def parse_mft_flags(flags: int) -> List[str]:
     """
@@ -768,6 +939,7 @@ def parse_mft_flags(flags: int) -> List[str]:
     }
     return [name for bit, name in FLAG_MAP.items() if flags & bit]
 
+
 def parse_attribute_flags(flags: int) -> List[str]:
     """
     This function returns the string values for MFT attribute flags.
@@ -780,6 +952,7 @@ def parse_attribute_flags(flags: int) -> List[str]:
     }
     return [name for bit, name in ATTR_FLAGS.items() if flags & bit]
 
+
 def get_mft_entry_size(value: int, cluster_size: int) -> int:
     """
     This function returns the MFT entry size.
@@ -790,26 +963,49 @@ def get_mft_entry_size(value: int, cluster_size: int) -> int:
     else:
         return value * cluster_size
 
-def walk_attributes(data: bytes, mft_entry: MFTEntryHeader, entry_offset: int, cluster_size: int, file: BufferedReader, ntfs_offset: int) -> None:
+
+def walk_attributes(
+    data: bytes,
+    mft_entry: MFTEntryHeader,
+    entry_offset: int,
+    cluster_size: int,
+    file: BufferedReader,
+    ntfs_offset: int,
+) -> None:
     """
     This function loops over one entry attributes.
     """
 
     offset = entry_offset
-    attribute_header = AttributeHeader.from_buffer_copy(data[offset:offset + sizeof(AttributeHeader)])
+    attribute_header = AttributeHeader.from_buffer_copy(
+        data[offset : offset + sizeof(AttributeHeader)]
+    )
 
     while attribute_header.type_id != 0xFFFFFFFF:
         if attribute_header.non_resident == 0:
             # resident = ResidentAttribute.from_buffer_copy(data[offset + sizeof(AttributeHeader):])
-            attribute_header = AttributeHeaderResident.from_buffer_copy(data[offset:offset + sizeof(AttributeHeaderResident)])
+            attribute_header = AttributeHeaderResident.from_buffer_copy(
+                data[offset : offset + sizeof(AttributeHeaderResident)]
+            )
             # value_offset = offset + resident.value_offset
-            attribute_header.value_offset = offset + attribute_header.attr_offset
-            attribute_header.data = data[attribute_header.value_offset:attribute_header.value_offset + attribute_header.attr_length]
+            attribute_header.value_offset = (
+                offset + attribute_header.attr_offset
+            )
+            attribute_header.data = data[
+                attribute_header.value_offset : attribute_header.value_offset
+                + attribute_header.attr_length
+            ]
         else:
             # nonresident = NonResidentAttribute.from_buffer_copy(data[offset + sizeof(AttributeHeader):])
-            attribute_header = AttributeHeaderNonResident.from_buffer_copy(data[offset:offset + sizeof(AttributeHeaderNonResident)])
-            attribute_header.value_offset = offset + attribute_header.data_run_offset
-            attribute_header.data_runs_data = data[attribute_header.value_offset:]
+            attribute_header = AttributeHeaderNonResident.from_buffer_copy(
+                data[offset : offset + sizeof(AttributeHeaderNonResident)]
+            )
+            attribute_header.value_offset = (
+                offset + attribute_header.data_run_offset
+            )
+            attribute_header.data_runs_data = data[
+                attribute_header.value_offset :
+            ]
             attribute_header.parse_data_runs(cluster_size)
 
         if attribute_header.type_id == 0x10:
@@ -822,14 +1018,19 @@ def walk_attributes(data: bytes, mft_entry: MFTEntryHeader, entry_offset: int, c
             parse_security_descriptor(attribute_header, file, ntfs_offset)
 
         attribute_header.offset = offset
-        attribute_header.name = ATTRIBUTE_TYPES.get(attribute_header.type_id, hex(attribute_header.type_id))
+        attribute_header.name = ATTRIBUTE_TYPES.get(
+            attribute_header.type_id, hex(attribute_header.type_id)
+        )
         mft_entry.attributes.append(attribute_header)
         offset += attribute_header.length
 
-        if data[offset:offset + 4] == b"\xff\xff\xff\xff":
+        if data[offset : offset + 4] == b"\xff\xff\xff\xff":
             break
 
-        attribute_header = AttributeHeader.from_buffer_copy(data[offset:offset + sizeof(AttributeHeader)])
+        attribute_header = AttributeHeader.from_buffer_copy(
+            data[offset : offset + sizeof(AttributeHeader)]
+        )
+
 
 def parse_mft() -> Tuple[BufferedReader, MFTEntryHeader, int]:
     """
@@ -840,18 +1041,30 @@ def parse_mft() -> Tuple[BufferedReader, MFTEntryHeader, int]:
     file, vbr, ntfs_offset = ntfs_parse()
     cluster_size = vbr.bytes_per_sector * vbr.sectors_per_cluster
     mft_offset_bytes = ntfs_offset + (vbr.mft_lcn * cluster_size)
-    mft_entry_size = get_mft_entry_size(vbr.clusters_per_mft_record, cluster_size)
+    mft_entry_size = get_mft_entry_size(
+        vbr.clusters_per_mft_record, cluster_size
+    )
 
     file.seek(mft_offset_bytes)
     data = file.read(mft_entry_size)
 
     mft_entry = MFTEntryHeader.from_buffer_copy(data)
     mft_entry.attributes = []
-    walk_attributes(data, mft_entry, mft_entry.first_attr_offset, cluster_size, file, ntfs_offset)
+    walk_attributes(
+        data,
+        mft_entry,
+        mft_entry.first_attr_offset,
+        cluster_size,
+        file,
+        ntfs_offset,
+    )
 
     return file, mft_entry, ntfs_offset
 
-def get_mft_content(file: BufferedReader, mft_entry: MFTEntryHeader, ntfs_offset: int) -> bytearray:
+
+def get_mft_content(
+    file: BufferedReader, mft_entry: MFTEntryHeader, ntfs_offset: int
+) -> bytearray:
     """
     This generator yields MFT content blocks.
     """
@@ -860,32 +1073,27 @@ def get_mft_content(file: BufferedReader, mft_entry: MFTEntryHeader, ntfs_offset
         if attribute.type_id == 0x80 and attribute.non_resident:
             yield from attribute.read_data_runs(file, ntfs_offset)
 
-def main() -> int:
+
+def print_mft(mft: MFTEntryHeader) -> None:
     """
-    The main function to starts the script from the command line.
+    This function prints the MFT values.
     """
 
-    file, mft_entry, ntfs_offset = parse_mft()
-
-    if mft_entry.signature != b'FILE':
-        print("Invalid MFT entry signature.")
-        return 1
-    else:
-        print("[+] MFT Entry Detected")
-        print(f"  Signature:              {bytes(mft_entry.signature).decode()}")
-        print(f"  Fixup offset:           {mft_entry.fixup_offset}")
-        print(f"  Fixup entries:          {mft_entry.fixup_entries}")
-        print(f"  Log sequence number:    {mft_entry.log_seq_number}")
-        print(f"  Sequence #:             {mft_entry.sequence_number}")
-        print(f"  Hard Links:             {mft_entry.hard_link_count}")
-        print(f"  First attribute offset: {mft_entry.first_attr_offset}")
-        print(f"  Flags:                  {hex(mft_entry.flags)}")
-        if mft_entry.flags:
-            print("     ", ", ".join(parse_mft_flags(mft_entry.flags)))
-        print(f"  Used entry size:        {mft_entry.used_entry_size}")
-        print(f"  Allocated entry size:   {mft_entry.allocated_entry_size}")
-        print(f"  Next attribute ID:      {mft_entry.next_attr_id}")
-        print(f"  MFT Record #:           {mft_entry.mft_record_number}")
+    print("[+] MFT Entry Detected")
+    print(f"  Signature:              {bytes(mft_entry.signature).decode()}")
+    print(f"  Fixup offset:           {mft_entry.fixup_offset}")
+    print(f"  Fixup entries:          {mft_entry.fixup_entries}")
+    print(f"  Log sequence number:    {mft_entry.log_seq_number}")
+    print(f"  Sequence #:             {mft_entry.sequence_number}")
+    print(f"  Hard Links:             {mft_entry.hard_link_count}")
+    print(f"  First attribute offset: {mft_entry.first_attr_offset}")
+    print(f"  Flags:                  {hex(mft_entry.flags)}")
+    if mft_entry.flags:
+        print("     ", ", ".join(parse_mft_flags(mft_entry.flags)))
+    print(f"  Used entry size:        {mft_entry.used_entry_size}")
+    print(f"  Allocated entry size:   {mft_entry.allocated_entry_size}")
+    print(f"  Next attribute ID:      {mft_entry.next_attr_id}")
+    print(f"  MFT Record #:           {mft_entry.mft_record_number}")
 
     for attribute in mft_entry.attributes:
         non_resident = bool(attribute.non_resident)
@@ -919,16 +1127,46 @@ def main() -> int:
 
         if getattr(attribute, "parsing", None):
             if isinstance(attribute.parsing, list):
-                parsing_indent = '\n    ' + "\n".join((str(x) for x in attribute.parsing)).replace('\n', '\n    ')
+                parsing_indent = "\n    " + "\n".join(
+                    (str(x) for x in attribute.parsing)
+                ).replace("\n", "\n    ")
             else:
-                parsing_indent = '\n  ' + str(attribute.parsing).replace('\n', '\n  ')
+                parsing_indent = "\n  " + str(attribute.parsing).replace(
+                    "\n", "\n  "
+                )
             print(f"  Value parsed: {parsing_indent}")
+
+
+def mft_extract(
+    file: BufferedReader, mft_entry: MFTEntryHeader, ntfs_offset: int
+) -> None:
+    """
+    This function extracts the full MFT file content.
+    """
 
     with open("$MFT", "wb") as mft_extract:
         for block in get_mft_content(file, mft_entry, ntfs_offset):
             mft_extract.write(block)
 
+
+def main() -> int:
+    """
+    The main function to starts the script from the command line.
+    """
+
+    print(copyright)
+
+    file, mft_entry, ntfs_offset = parse_mft()
+
+    if mft_entry.signature != b"FILE":
+        print("Invalid MFT entry signature.")
+        return 1
+
+    print_mft(mft_entry)
+    mft_extract(file, mft_entry, ntfs_offset)
+
     return 0
+
 
 if __name__ == "__main__":
     exit(main())

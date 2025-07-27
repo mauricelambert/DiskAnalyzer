@@ -25,7 +25,7 @@ This package implements multiples libraries and tools to parse, analyze
 and extract informations from disk on the live system.
 """
 
-__version__ = "0.0.1"
+__version__ = "0.1.0"
 __author__ = "Maurice Lambert"
 __author_email__ = "mauricelambert434@gmail.com"
 __maintainer__ = "Maurice Lambert"
@@ -47,8 +47,6 @@ under certain conditions.
 """
 copyright = __copyright__
 license = __license__
-
-print(copyright)
 
 from ctypes import (
     LittleEndianStructure,
@@ -317,16 +315,10 @@ def print_mbr_analysis(mbr: MBRHeader) -> None:
     for index, entry in enumerate(mbr.partitions):
         if entry.type != 0:
             print(f"  Partition {index + 1}:")
-            print(
-                f"    Status       : 0x{entry.status:02X} ({status_dict[entry.status]})"
-            )
-            print(
-                f"    Type         : 0x{entry.type:02X} ({mbr_type_dict[entry.type]})"
-            )
+            print(f"    Status       : 0x{entry.status:02X} ({status_dict[entry.status]})")
+            print(f"    Type         : 0x{entry.type:02X} ({mbr_type_dict[entry.type]})")
             print(f"    Start LBA    : {entry.lba_start}")
-            print(
-                f"    Total Sectors: {entry.total_sectors} B ({(entry.total_sectors * 512) / (1024 ** 2):.2f} MB)"
-            )
+            print(f"    Total Sectors: {entry.total_sectors} ({(entry.total_sectors * 512) / (1024 ** 2):.2f} MB)")
 
     print("  Boot Signature")
     print("   ", bytes(mbr.signature).hex())
@@ -392,9 +384,7 @@ def print_gpt_analysis(gpt_header: GPTHeader) -> None:
         print(f"    Start LBA    : {entry.start_lba}")
         print(f"    End LBA      : {entry.end_lba}")
         print(f"    Size in MB   : {gpt_partitions_size(entry):.2f} MB")
-        print(
-            f"    Attributes   : {hex(entry.attributes)} ({entry.attributes})"
-        )
+        print(f"    Attributes   : {hex(entry.attributes)} ({entry.attributes})")
         if entry.attributes:
             print(f"        {', '.join(entry.flags)}")
         print(f"    Partition Name: {part_name}")
@@ -463,6 +453,7 @@ def main() -> int:
     The main function to starts the script from the command line.
     """
 
+    print(copyright)
     value = disk_parsing()
 
     if isinstance(value, PermissionError):

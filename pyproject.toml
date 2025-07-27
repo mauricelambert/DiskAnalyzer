@@ -4,7 +4,7 @@
 
 [project]
 name = "DiskAnalyzer"
-version = "0.0.1"
+version = "0.1.0"
 dependencies = []
 authors = [
     {name = "Maurice Lambert", email = "mauricelambert434@gmail.com"},
@@ -42,6 +42,8 @@ requires-python = ">=3.8"
 DiskAnalyzer = "DiskAnalyzer.DiskAnalyzer:main"
 NtfsAnalyzer = "DiskAnalyzer.NtfsAnalyzer:main"
 MftAnalyzer = "DiskAnalyzer.MftAnalyzer:main"
+ExFatBootSector = "DiskAnalyzer.ExFatBootSector:main"
+MbrRepair = "DiskAnalyzer.MbrRepair:main"
 
 [project.urls]
 "Github" = "https://github.com/mauricelambert/DiskAnalyzer"
