@@ -1,4 +1,0 @@
-[console_scripts]
-DiskAnalyzer = DiskAnalyzer.DiskAnalyzer:main
-MftAnalyzer = DiskAnalyzer.MftAnalyzer:main
-NtfsAnalyzer = DiskAnalyzer.NtfsAnalyzer:main
